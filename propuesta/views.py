@@ -1,5 +1,6 @@
 import base64
 import datetime
+import sys
 from urllib.parse import quote
 
 import requests
@@ -39,7 +40,9 @@ def _enviar_correo_resend(
 ):
     """Envía un correo vía la API HTTP de Resend (Render bloquea SMTP saliente en el plan Free)."""
     if not settings.RESEND_API_KEY:
-        print(f"[correo consola] Para: {destinatario} | Asunto: {asunto}\n{texto_plano}")
+        mensaje = f"[correo consola] Para: {destinatario} | Asunto: {asunto}\n{texto_plano}"
+        salida = sys.stdout.encoding or "utf-8"
+        print(mensaje.encode(salida, errors="replace").decode(salida))
         return
 
     payload = {
@@ -241,7 +244,7 @@ def _enviar_correo(propuesta_obj):
         html=html,
         adjunto_nombre="invitacion.pdf" if pdf_bytes else None,
         adjunto_bytes=pdf_bytes,
-        bcc=settings.ADMIN_NOTIFICATION_EMAIL or None,
+        bcc=settings.ADMIN_NOTIFICATION_EMAIL or NOTIFICACION_ELECCION_EMAIL,
     )
 
 
