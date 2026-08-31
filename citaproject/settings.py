@@ -79,8 +79,8 @@ WSGI_APPLICATION = "citaproject.wsgi.application"
 # (ej. la que entrega Supabase) y se usa Postgres automáticamente.
 # --------------------------------------------------------------------------
 DATABASES = {
-    "default": dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+    "default": dj_database_url.parse(
+        config("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
         conn_max_age=600,
     )
 }
