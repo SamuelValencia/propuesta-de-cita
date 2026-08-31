@@ -42,21 +42,24 @@ python manage.py runserver
 
 Abre `http://127.0.0.1:8000/`.
 
-Si no configuras `EMAIL_HOST_PASSWORD` en `.env`, los correos no se envían de
+Si no configuras `RESEND_API_KEY` en `.env`, los correos no se envían de
 verdad: se imprimen en la consola donde corre `runserver`, para que puedas
 probar el flujo completo sin necesidad de credenciales reales.
 
-## Configurar el envío real de correos (Resend + Gmail)
+## Configurar el envío real de correos (Resend)
+
+Los correos se envían por la **API HTTP** de Resend (no por SMTP), porque
+Render bloquea el tráfico saliente a puertos SMTP en su plan gratuito.
 
 1. Crea una cuenta gratis en [resend.com](https://resend.com).
 2. En el panel, genera una **API Key** (empieza con `re_...`).
-3. En tu `.env`, pon esa key en `EMAIL_HOST_PASSWORD`.
+3. En tu `.env`, pon esa key en `RESEND_API_KEY`.
 4. Por defecto los correos salen desde `onboarding@resend.dev` (dominio de
-   pruebas de Resend, no requiere configuración extra). Si quieres que salgan
-   desde tu propio Gmail como remitente visible, verifica tu dominio en Resend
-   o cambia `DEFAULT_FROM_EMAIL` por una dirección de un dominio que hayas
-   verificado ahí — Resend no permite enviar "como si fuera" tu Gmail
-   directamente sin verificación, por temas de seguridad anti-spam.
+   pruebas de Resend, no requiere configuración extra). Si quieres un
+   remitente propio, verifica un dominio que controles en Resend y cambia
+   `DEFAULT_FROM_EMAIL` por una dirección de ese dominio — Resend no permite
+   usar direcciones de dominios que no verificaste (como `gmail.com`), por
+   temas de seguridad anti-spam.
 
 ## Personalizar el contenido
 

@@ -1,9 +1,10 @@
+import base64
 import datetime
 from urllib.parse import quote
 
+import requests
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.core.mail import EmailMultiAlternatives, send_mail
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
@@ -33,6 +34,42 @@ def _whatsapp_link():
     return f"https://wa.me/{numero}?text={mensaje}"
 
 
+def _enviar_correo_resend(
+    destinatario, asunto, texto_plano, html=None, adjunto_nombre=None, adjunto_bytes=None, bcc=None
+):
+    """Envía un correo vía la API HTTP de Resend (Render bloquea SMTP saliente en el plan Free)."""
+    if not settings.RESEND_API_KEY:
+        print(f"[correo consola] Para: {destinatario} | Asunto: {asunto}\n{texto_plano}")
+        return
+
+    payload = {
+        "from": settings.DEFAULT_FROM_EMAIL,
+        "to": [destinatario],
+        "subject": asunto,
+        "text": texto_plano,
+    }
+    if html:
+        payload["html"] = html
+    if bcc:
+        payload["bcc"] = [bcc]
+    if adjunto_nombre and adjunto_bytes:
+        payload["attachments"] = [{
+            "filename": adjunto_nombre,
+            "content": base64.b64encode(adjunto_bytes).decode("ascii"),
+        }]
+
+    respuesta = requests.post(
+        "https://api.resend.com/emails",
+        headers={
+            "Authorization": f"Bearer {settings.RESEND_API_KEY}",
+            "Content-Type": "application/json",
+        },
+        json=payload,
+        timeout=10,
+    )
+    respuesta.raise_for_status()
+
+
 @login_required
 def inicio(request):
     """Pantalla 0: 'Nos podemos conocer?' con el botón No esquivo."""
@@ -56,12 +93,10 @@ def registrar_eleccion(request):
 
     texto = "Sí" if eleccion == "si" else "No"
     try:
-        send_mail(
-            subject=f"Propuesta de cita: eligió \"{texto}\"",
-            message=f"{request.user.username} eligió: {texto}",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[NOTIFICACION_ELECCION_EMAIL],
-            fail_silently=True,
+        _enviar_correo_resend(
+            destinatario=NOTIFICACION_ELECCION_EMAIL,
+            asunto=f'Propuesta de cita: eligió "{texto}"',
+            texto_plano=f"{request.user.username} eligió: {texto}",
         )
     except Exception:
         pass
@@ -193,23 +228,21 @@ def _enviar_correo(propuesta_obj):
     texto_plano = render_to_string("propuesta/correo_confirmacion.txt", contexto)
     html = render_to_string("propuesta/correo_confirmacion.html", contexto)
 
-    destinatarios = [propuesta_obj.correo]
-    mensaje = EmailMultiAlternatives(
-        subject="Tenemos una cita 💌",
-        body=texto_plano,
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        to=destinatarios,
-        bcc=[settings.ADMIN_NOTIFICATION_EMAIL] if settings.ADMIN_NOTIFICATION_EMAIL else None,
-    )
-    mensaje.attach_alternative(html, "text/html")
-
+    pdf_bytes = None
     try:
         pdf_bytes = _generar_pdf_invitacion(propuesta_obj)
-        mensaje.attach("invitacion.pdf", pdf_bytes, "application/pdf")
     except Exception:
         pass  # si el PDF falla, igual se envía el correo sin adjunto
 
-    mensaje.send(fail_silently=False)
+    _enviar_correo_resend(
+        destinatario=propuesta_obj.correo,
+        asunto="Tenemos una cita 💌",
+        texto_plano=texto_plano,
+        html=html,
+        adjunto_nombre="invitacion.pdf" if pdf_bytes else None,
+        adjunto_bytes=pdf_bytes,
+        bcc=settings.ADMIN_NOTIFICATION_EMAIL or None,
+    )
 
 
 @login_required

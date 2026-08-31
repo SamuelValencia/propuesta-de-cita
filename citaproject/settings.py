@@ -3,8 +3,7 @@ Configuración del proyecto "Propuesta de Cita".
 
 Variables de entorno soportadas (ver .env.example):
     SECRET_KEY, DEBUG, ALLOWED_HOSTS, DATABASE_URL,
-    EMAIL_HOST, EMAIL_PORT, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD,
-    EMAIL_USE_TLS, DEFAULT_FROM_EMAIL, ADMIN_NOTIFICATION_EMAIL,
+    RESEND_API_KEY, DEFAULT_FROM_EMAIL, ADMIN_NOTIFICATION_EMAIL,
     ZONA_HORARIA
 """
 
@@ -121,24 +120,13 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # --------------------------------------------------------------------------
-# Correo — configurado para Resend vía SMTP (también sirve con Gmail SMTP
-# o cualquier otro proveedor si cambias estos valores en el .env)
+# Correo — Resend vía su API HTTP (Render bloquea el tráfico SMTP saliente
+# en el plan Free, así que no se usa el backend de correo de Django).
 # --------------------------------------------------------------------------
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = config("EMAIL_HOST", default="smtp.resend.com")
-EMAIL_PORT = config("EMAIL_PORT", default=587, cast=int)
-EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=True, cast=bool)
-EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="resend")
-EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
+RESEND_API_KEY = config("RESEND_API_KEY", default="")
 DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default="Propuesta de Cita <onboarding@resend.dev>")
-# Si además de reenviarte una copia a ti mismo quieres una alerta interna:
+# Si además del correo a la invitada quieres una copia/alerta interna:
 ADMIN_NOTIFICATION_EMAIL = config("ADMIN_NOTIFICATION_EMAIL", default="")
-
-# En desarrollo, si no hay contraseña de correo configurada, los correos
-# se imprimen en la consola en vez de enviarse de verdad (para poder probar
-# el flujo sin credenciales reales).
-if DEBUG and not EMAIL_HOST_PASSWORD:
-    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # --------------------------------------------------------------------------
 # Reglas del formulario de fecha (parametrizable sin tocar el código)
