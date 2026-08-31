@@ -1,0 +1,15 @@
+{% extends "propuesta/base.html" %}
+{% load crispy_forms_tags %}
+{% block titulo %}Cuéntame sobre ti{% endblock %}
+{% block contenido %}
+<h1 class="titulo-pantalla">Antes de seguir, cuéntame sobre ti</h1>
+<p class="subtitulo-pantalla">Solo lo necesario para poder avisarte los detalles.</p>
+
+<form method="post" novalidate>
+  {% csrf_token %}
+  {% crispy form %}
+  <div class="fila-acciones">
+    <button type="submit" class="boton-principal">Continuar</button>
+  </div>
+</form>
+{% endblock %}

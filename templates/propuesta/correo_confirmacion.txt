@@ -1,0 +1,14 @@
+Hola {{ p.nombre }},
+
+Tenemos una cita. Aquí están los detalles:
+
+Fecha: {{ p.fecha|date:"l j \d\e F" }}
+Hora: {{ p.hora|time:"H:i" }}
+Actividad: {{ p.get_actividad_display }}
+Cena en: {{ p.get_restaurante_display }}
+
+Te espero.
+{% if whatsapp_link %}
+La cita está reservada, pero mi WhatsApp está disponible para ti. 😉
+{{ whatsapp_link }}
+{% endif %}

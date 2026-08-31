@@ -1,0 +1,44 @@
+{% extends "propuesta/base.html" %}
+{% block titulo %}Elige el restaurante{% endblock %}
+{% block contenido %}
+<h1 class="titulo-pantalla">¿Con qué le ponemos el broche final a la noche?</h1>
+<p class="subtitulo-pantalla">Toca una opción para continuar.</p>
+
+<form method="post" id="form-restaurante">
+  {% csrf_token %}
+  <input type="hidden" name="restaurante" id="restaurante-elegido">
+
+  <div class="opciones-grid">
+    {% for valor, nombre in opciones %}
+    <button type="button" class="opcion-tarjeta" data-valor="{{ valor }}">
+      <span class="opcion-icono">
+        {% if valor == "mcdonalds" %}<i class="fa-solid fa-burger"></i>
+        {% elif valor == "pizza" %}<i class="fa-solid fa-pizza-slice"></i>
+        {% elif valor == "parrilla" %}<i class="fa-solid fa-drumstick-bite"></i>
+        {% else %}<i class="fa-solid fa-fish"></i>{% endif %}
+      </span>
+      <span class="opcion-nombre">{{ nombre }}</span>
+    </button>
+    {% endfor %}
+  </div>
+</form>
+{% endblock %}
+
+{% block js %}
+<script>
+(function () {
+  const tarjetas = document.querySelectorAll(".opcion-tarjeta");
+  const campoOculto = document.getElementById("restaurante-elegido");
+  const formulario = document.getElementById("form-restaurante");
+
+  tarjetas.forEach(function (tarjeta) {
+    tarjeta.addEventListener("click", function () {
+      tarjetas.forEach(function (t) { t.classList.remove("seleccionada"); });
+      tarjeta.classList.add("seleccionada");
+      campoOculto.value = tarjeta.dataset.valor;
+      setTimeout(function () { formulario.submit(); }, 180);
+    });
+  });
+})();
+</script>
+{% endblock %}

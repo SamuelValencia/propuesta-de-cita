@@ -1,0 +1,11 @@
+{% extends "propuesta/base.html" %}
+{% block titulo %}Hasta pronto{% endblock %}
+{% block contenido %}
+<div class="escenario-inicio">
+  <h1 class="pregunta-inicial" style="max-width: 20ch;">Está bien, cuando quieras vuelve a intentarlo</h1>
+  <p class="subtitulo-pantalla" style="text-align:center; max-width: 40ch;">
+    Aquí va a seguir esta invitación esperando por ti.
+  </p>
+  <a href="{% url 'propuesta:logout' %}" class="boton-secundario">Cerrar</a>
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "propuesta/base.html" %}
+{% block titulo %}Tenemos una cita{% endblock %}
+{% block contenido %}
+<h1 class="titulo-pantalla">Ya quedó todo listo</h1>
+
+<div class="tarjeta-resumen">
+  <p class="resumen-texto">
+    Entonces nos vemos el <span class="resumen-dato">{{ p.fecha|date:"l j \d\e F" }}</span>
+    a las <span class="resumen-dato">{{ p.hora|time:"H:i" }}</span>
+    para <span class="resumen-dato">{{ p.get_actividad_display }}</span>,
+    y después cenamos en <span class="resumen-dato">{{ p.get_restaurante_display }}</span>.
+    Ya no hay vuelta atrás 😄
+  </p>
+
+  <span class="contador-dias">
+    {% if dias_restantes == 0 %}Es hoy{% elif dias_restantes == 1 %}Falta 1 día{% else %}Faltan {{ dias_restantes }} días{% endif %}
+  </span>
+</div>
+
+<p class="subtitulo-pantalla" style="margin-top: 1.5rem;">
+  {% if p.correo_enviado %}
+    Te acabo de mandar los detalles a {{ p.correo }}.
+  {% else %}
+    Guardé todo, aunque el correo tardará un poco en llegarte.
+  {% endif %}
+</p>
+
+<div class="fila-acciones">
+  <a href="{% url 'propuesta:descargar_invitacion' p.pk %}" class="boton-secundario">
+    <i class="fa-solid fa-file-pdf"></i> Descargar invitación
+  </a>
+</div>
+
+{% if whatsapp_link %}
+<div class="tarjeta-resumen" style="margin-top: 1.5rem;">
+  <p class="resumen-texto" style="font-size: 1.05rem;">
+    La cita está reservada, pero mi WhatsApp está disponible para ti. 😉
+  </p>
+  <div class="fila-acciones">
+    <a href="{{ whatsapp_link }}" target="_blank" rel="noopener" class="boton-principal">
+      <i class="fa-brands fa-whatsapp"></i> Escríbeme por WhatsApp
+    </a>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends "propuesta/base.html" %}
+{% block titulo %}¿Nos podemos conocer?{% endblock %}
+{% block contenido %}
+<div class="escenario-inicio">
+  <h1 class="pregunta-inicial">¿Nos podemos conocer?</h1>
+
+  <div class="zona-botones">
+    <button id="boton-si" class="boton-principal" style="position:absolute; top:50%; left:40%; transform:translate(-50%,-50%);">Sí</button>
+    <button id="boton-no" class="boton-secundario">No</button>
+  </div>
+
+  <p class="pista-no" id="pista-no"></p>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+(function () {
+  const zona = document.querySelector(".zona-botones");
+  const botonNo = document.getElementById("boton-no");
+  const botonSi = document.getElementById("boton-si");
+  const pista = document.getElementById("pista-no");
+
+  const LIMITE_INTENTOS = 5;
+  let intentos = 0;
+  let capturado = false;
+
+  function notificarEleccion(eleccion) {
+    const datos = new URLSearchParams({ eleccion: eleccion });
+    fetch("{% url 'propuesta:registrar_eleccion' %}", {
+      method: "POST",
+      body: datos,
+      keepalive: true,
+    });
+  }
+
+  botonSi.addEventListener("click", function () {
+    notificarEleccion("si");
+    window.location.href = "{% url 'propuesta:datos' %}";
+  });
+
+  function moverBotonNo() {
+    const anchoZona = zona.clientWidth;
+    const altoZona = zona.clientHeight;
+    const anchoBtn = botonNo.offsetWidth;
+    const altoBtn = botonNo.offsetHeight;
+
+    const maxX = Math.max(anchoZona - anchoBtn, 0);
+    const maxY = Math.max(altoZona - altoBtn, 0);
+
+    const x = Math.random() * maxX;
+    const y = Math.random() * maxY;
+
+    botonNo.style.left = x + "px";
+    botonNo.style.top = y + "px";
+    botonNo.style.transform = "none";
+  }
+
+  function manejarIntento(evento) {
+    if (capturado) return;
+
+    intentos += 1;
+
+    if (intentos < LIMITE_INTENTOS) {
+      evento.preventDefault();
+      moverBotonNo();
+      pista.textContent = "";
+    } else {
+      // Al 5to intento, el botón deja de escapar y funciona normal
+      capturado = true;
+      pista.textContent = "";
+    }
+  }
+
+  // El botón esquiva el clic mientras no se haya "capturado"
+  botonNo.addEventListener("pointerdown", function (evento) {
+    if (!capturado) {
+      manejarIntento(evento);
+    }
+  });
+
+  botonNo.addEventListener("click", function (evento) {
+    if (capturado) {
+      notificarEleccion("no");
+      window.location.href = "{% url 'propuesta:no_final' %}";
+    } else {
+      evento.preventDefault();
+    }
+  });
+
+  // También esquiva si el mouse solo pasa cerca (mayor "personalidad")
+  botonNo.addEventListener("mouseenter", function () {
+    if (!capturado && intentos < LIMITE_INTENTOS) {
+      moverBotonNo();
+    }
+  });
+})();
+</script>
+{% endblock %}

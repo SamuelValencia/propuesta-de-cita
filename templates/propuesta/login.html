@@ -1,0 +1,18 @@
+{% extends "propuesta/base.html" %}
+{% load crispy_forms_tags %}
+{% block titulo %}Iniciar sesión{% endblock %}
+{% block contenido %}
+<div class="escenario-inicio">
+  <h1 class="titulo-pantalla">Antes de seguir...</h1>
+  <p class="subtitulo-pantalla">Ingresa tu usuario y contraseña para ver la propuesta.</p>
+
+  <form method="post" novalidate style="width: 100%; max-width: 360px;">
+    {% csrf_token %}
+    {% crispy form %}
+    <input type="hidden" name="next" value="{{ next }}">
+    <div class="fila-acciones" style="justify-content: center;">
+      <button type="submit" class="boton-principal">Entrar</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

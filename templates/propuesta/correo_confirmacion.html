@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<style>
+  body { margin:0; padding:0; background:#2a0f16; font-family: Georgia, 'Times New Roman', serif; }
+  .contenedor { max-width: 480px; margin: 0 auto; padding: 40px 28px; }
+  .tarjeta { background:#48192a; border:1px solid #d7a441; border-radius:16px; padding:32px 28px; }
+  h1 { color:#fbf3ea; font-size:22px; margin:0 0 18px; }
+  p { color:#f0c8c2; font-size:15px; line-height:1.6; }
+  .dato { color:#e8c477; font-weight:bold; }
+  .pie { color:#f0c8c2; font-size:12px; text-align:center; margin-top:24px; opacity:0.7; }
+</style>
+</head>
+<body>
+  <div class="contenedor">
+    <div class="tarjeta">
+      <h1>Tenemos una cita 💌</h1>
+      <p>Hola {{ p.nombre }},</p>
+      <p>
+        Nos vemos el <span class="dato">{{ p.fecha|date:"l j \d\e F" }}</span>
+        a las <span class="dato">{{ p.hora|time:"H:i" }}</span>
+        para <span class="dato">{{ p.get_actividad_display }}</span>,
+        y después cenamos en <span class="dato">{{ p.get_restaurante_display }}</span>.
+      </p>
+      <p>Te dejo la invitación en PDF adjunta. Nos vemos pronto.</p>
+      {% if whatsapp_link %}
+      <p>
+        La cita está reservada, pero mi WhatsApp está disponible para ti. 😉
+      </p>
+      <p style="text-align:center; margin: 24px 0;">
+        <a href="{{ whatsapp_link }}"
+           style="background:#d7a441; color:#2a0f16; padding:12px 26px; border-radius:999px; text-decoration:none; font-weight:bold; display:inline-block;">
+          Escríbeme por WhatsApp
+        </a>
+      </p>
+      {% endif %}
+    </div>
+    <p class="pie">Este correo se generó automáticamente a partir de tu confirmación.</p>
+  </div>
+</body>
+</html>

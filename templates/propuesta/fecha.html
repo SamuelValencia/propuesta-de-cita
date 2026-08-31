@@ -1,0 +1,69 @@
+{% extends "propuesta/base.html" %}
+{% block titulo %}Elige cuándo nos vemos{% endblock %}
+{% block contenido %}
+<h1 class="titulo-pantalla">Elige cuándo nos vemos</h1>
+<p class="subtitulo-pantalla">
+  Tienes hasta {{ fecha_max }} para elegir. Entre semana solo hay espacio desde las
+  {{ hora_minima_entre_semana }}; si es sábado o domingo, la hora es toda tuya.
+</p>
+
+{% if form.non_field_errors %}
+  <div class="alert alert-danger" style="background: rgba(215,164,65,0.15); border: 1px solid var(--oro-400); color: var(--crema-50);">
+    {{ form.non_field_errors.0 }}
+  </div>
+{% endif %}
+
+<form method="post" novalidate id="form-fecha">
+  {% csrf_token %}
+  <div class="row g-3">
+    <div class="col-md-6">
+      <label for="id_fecha" class="form-label">Fecha</label>
+      <input type="date" class="form-control" id="id_fecha" name="fecha"
+             min="{{ fecha_min }}" max="{{ fecha_max }}"
+             value="{{ form.fecha.value|default:'' }}" required>
+    </div>
+    <div class="col-md-6">
+      <label for="id_hora" class="form-label">Hora</label>
+      <input type="time" class="form-control" id="id_hora" name="hora"
+             value="{{ form.hora.value|default:'' }}" required>
+      <div class="form-text" id="ayuda-hora" style="color: var(--blush-300);"></div>
+    </div>
+  </div>
+
+  <div class="fila-acciones">
+    <button type="submit" class="boton-principal">Continuar</button>
+  </div>
+</form>
+{% endblock %}
+
+{% block js %}
+<script>
+(function () {
+  const inputFecha = document.getElementById("id_fecha");
+  const inputHora = document.getElementById("id_hora");
+  const ayuda = document.getElementById("ayuda-hora");
+  const HORA_MINIMA_ENTRE_SEMANA = "{{ hora_minima_entre_semana }}";
+
+  function actualizarReglaHora() {
+    if (!inputFecha.value) return;
+    const fecha = new Date(inputFecha.value + "T00:00:00");
+    const diaSemana = fecha.getDay(); // 0 domingo ... 6 sábado
+    const esFinDeSemana = diaSemana === 0 || diaSemana === 6;
+
+    if (esFinDeSemana) {
+      inputHora.removeAttribute("min");
+      ayuda.textContent = "Fin de semana: elige la hora que prefieras.";
+    } else {
+      inputHora.setAttribute("min", HORA_MINIMA_ENTRE_SEMANA);
+      ayuda.textContent = "Entre semana: disponible desde las " + HORA_MINIMA_ENTRE_SEMANA + ".";
+      if (inputHora.value && inputHora.value < HORA_MINIMA_ENTRE_SEMANA) {
+        inputHora.value = HORA_MINIMA_ENTRE_SEMANA;
+      }
+    }
+  }
+
+  inputFecha.addEventListener("change", actualizarReglaHora);
+  actualizarReglaHora();
+})();
+</script>
+{% endblock %}

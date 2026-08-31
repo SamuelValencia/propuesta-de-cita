@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<style>
+  @page { size: A5; margin: 0; }
+  body { margin: 0; padding: 0; font-family: Helvetica, Arial, sans-serif; }
+
+  table.lienzo { width: 100%; border-collapse: collapse; background-color: #fdeef1; }
+  table.lienzo td { background-color: #fdeef1; padding: 0; }
+
+  .pagina { padding: 22px 34px 16px; }
+
+  .fila-corazones { text-align: center; margin: 0 0 14px; }
+  .fila-corazones span { margin: 0 5px; }
+
+  .contenido { text-align: center; }
+
+  .titulo {
+    font-family: Times-BoldItalic, "Times New Roman", Georgia, serif;
+    font-weight: bold;
+    font-style: italic;
+    font-size: 28px;
+    color: #d81e3d;
+    margin: 8px 0 8px;
+  }
+
+  .frase {
+    font-family: Times-Italic, "Times New Roman", Georgia, serif;
+    font-style: italic;
+    font-size: 12px;
+    color: #8a2a3a;
+    line-height: 1.7;
+    margin: 0 0 20px;
+  }
+
+  .para-nombre { font-size: 11px; color: #b5495a; margin: 0 0 2px; }
+  .nombre {
+    font-family: Times-BoldItalic, "Times New Roman", Georgia, serif;
+    font-weight: bold;
+    font-style: italic;
+    font-size: 21px;
+    color: #d81e3d;
+    margin: 0 0 20px;
+  }
+
+  .detalle { font-size: 13px; color: #5c1520; margin: 0 0 8px; }
+  .detalle b { color: #d81e3d; }
+
+  .fecha-hora-lbl {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #b5495a;
+    margin: 18px 0 4px;
+  }
+  .fecha-hora-val { font-size: 21px; font-weight: bold; color: #d81e3d; margin: 0 0 18px; }
+
+  .cierre-lbl { font-size: 11px; color: #7a1f2b; margin: 0 0 3px; }
+  .cierre a { font-size: 14px; font-weight: bold; color: #d81e3d; text-decoration: underline; }
+</style>
+</head>
+<body>
+<table class="lienzo">
+  <tr>
+    <td>
+      <div class="pagina">
+        <div class="contenido">
+
+          <p class="fila-corazones">
+            <span style="font-size:11px; color:#f2909f;">&#9829;</span>
+            <span style="font-size:19px; color:#d81e3d;">&#10084;</span>
+            <span style="font-size:10px; color:#f6c6d0;">&#9829;</span>
+            <span style="font-size:15px; color:#f2909f;">&#9829;</span>
+            <span style="font-size:12px; color:#d81e3d;">&#10084;</span>
+            <span style="font-size:16px; color:#f6c6d0;">&#9829;</span>
+          </p>
+
+          <p class="titulo">&iexcl;Tenemos una cita! &#9829;</p>
+          <p class="frase">
+            Estoy feliz de que hayas dicho que s&iacute;.<br>
+            Guarda estos detalles, porque ya no hay vuelta atr&aacute;s.
+          </p>
+
+          <p class="fila-corazones">
+            <span style="font-size:14px; color:#d81e3d;">&#9829;</span>
+            <span style="font-size:9px; color:#f2909f;">&#10084;</span>
+            <span style="font-size:17px; color:#f6c6d0;">&#9829;</span>
+          </p>
+
+          <p class="para-nombre">Para</p>
+          <p class="nombre">{{ p.nombre_completo }}</p>
+
+          <p class="detalle">&#9829; <b>Actividad:</b> {{ p.get_actividad_display }}</p>
+          <p class="detalle">&#10084; <b>Cena:</b> {{ p.get_restaurante_display }}</p>
+
+          <p class="fila-corazones">
+            <span style="font-size:10px; color:#f6c6d0;">&#9829;</span>
+            <span style="font-size:20px; color:#f2909f;">&#9829;</span>
+            <span style="font-size:12px; color:#d81e3d;">&#10084;</span>
+            <span style="font-size:9px; color:#f6c6d0;">&#9829;</span>
+          </p>
+
+          <p class="fecha-hora-lbl">Fecha y hora</p>
+          <p class="fecha-hora-val">{{ p.fecha|date:"d/m/Y" }} &middot; {{ p.hora|time:"H:i" }}</p>
+
+          {% if whatsapp_link %}
+          <p class="cierre-lbl">Escr&iacute;beme</p>
+          <p class="cierre"><a href="{{ whatsapp_link }}">Por WhatsApp &#9829;</a></p>
+          {% endif %}
+
+          <p class="fila-corazones" style="margin-top:14px; margin-bottom:0;">
+            <span style="font-size:12px; color:#f2909f;">&#10084;</span>
+            <span style="font-size:18px; color:#d81e3d;">&#9829;</span>
+            <span style="font-size:10px; color:#f6c6d0;">&#9829;</span>
+            <span style="font-size:15px; color:#f2909f;">&#10084;</span>
+            <span style="font-size:11px; color:#d81e3d;">&#9829;</span>
+          </p>
+
+        </div>
+      </div>
+    </td>
+  </tr>
+</table>
+</body>
+</html>

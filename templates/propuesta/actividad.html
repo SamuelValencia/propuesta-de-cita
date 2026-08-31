@@ -1,0 +1,44 @@
+{% extends "propuesta/base.html" %}
+{% block titulo %}Elige la actividad{% endblock %}
+{% block contenido %}
+<h1 class="titulo-pantalla">Elige cómo quieres que pasemos el tiempo juntos</h1>
+<p class="subtitulo-pantalla">Toca una opción para continuar.</p>
+
+<form method="post" id="form-actividad">
+  {% csrf_token %}
+  <input type="hidden" name="actividad" id="actividad-elegida">
+
+  <div class="opciones-grid">
+    {% for valor, nombre in opciones %}
+    <button type="button" class="opcion-tarjeta" data-valor="{{ valor }}">
+      <span class="opcion-icono">
+        {% if valor == "cine" %}<i class="fa-solid fa-film"></i>
+        {% elif valor == "gokart" %}<i class="fa-solid fa-flag-checkered"></i>
+        {% elif valor == "boliche" %}<i class="fa-solid fa-bowling-ball"></i>
+        {% else %}<i class="fa-solid fa-ticket"></i>{% endif %}
+      </span>
+      <span class="opcion-nombre">{{ nombre }}</span>
+    </button>
+    {% endfor %}
+  </div>
+</form>
+{% endblock %}
+
+{% block js %}
+<script>
+(function () {
+  const tarjetas = document.querySelectorAll(".opcion-tarjeta");
+  const campoOculto = document.getElementById("actividad-elegida");
+  const formulario = document.getElementById("form-actividad");
+
+  tarjetas.forEach(function (tarjeta) {
+    tarjeta.addEventListener("click", function () {
+      tarjetas.forEach(function (t) { t.classList.remove("seleccionada"); });
+      tarjeta.classList.add("seleccionada");
+      campoOculto.value = tarjeta.dataset.valor;
+      setTimeout(function () { formulario.submit(); }, 180);
+    });
+  });
+})();
+</script>
+{% endblock %}
