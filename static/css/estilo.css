@@ -176,6 +176,22 @@ label { color: var(--blush-300) !important; font-size: 0.9rem; }
   opacity: 1;
 }
 .invalid-feedback, .text-danger { color: var(--oro-300) !important; }
+
+.campo-password-envoltura { position: relative; }
+.campo-password-envoltura input { padding-right: 44px; }
+.boton-ver-password {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 4px 6px;
+  color: rgba(240, 200, 194, 0.6);
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+.boton-ver-password:hover { color: var(--oro-300); }
 .alert-danger {
   background: rgba(72, 25, 42, 0.55);
   border: 1px solid rgba(215, 164, 65, 0.35);

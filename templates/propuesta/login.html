@@ -16,3 +16,33 @@
   </form>
 </div>
 {% endblock %}
+
+{% block js %}
+<script>
+(function () {
+  const campoPassword = document.getElementById("id_password");
+  if (!campoPassword) return;
+
+  const envoltura = document.createElement("div");
+  envoltura.className = "campo-password-envoltura";
+  campoPassword.parentNode.insertBefore(envoltura, campoPassword);
+  envoltura.appendChild(campoPassword);
+
+  const boton = document.createElement("button");
+  boton.type = "button";
+  boton.className = "boton-ver-password";
+  boton.setAttribute("aria-label", "Mostrar contraseña");
+  boton.innerHTML = '<i class="fa-solid fa-eye"></i>';
+  envoltura.appendChild(boton);
+
+  boton.addEventListener("click", function () {
+    const estaOculta = campoPassword.type === "password";
+    campoPassword.type = estaOculta ? "text" : "password";
+    boton.innerHTML = estaOculta
+      ? '<i class="fa-solid fa-eye-slash"></i>'
+      : '<i class="fa-solid fa-eye"></i>';
+    boton.setAttribute("aria-label", estaOculta ? "Ocultar contraseña" : "Mostrar contraseña");
+  });
+})();
+</script>
+{% endblock %}
