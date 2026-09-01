@@ -76,6 +76,8 @@ def _enviar_correo_resend(
 @login_required
 def inicio(request):
     """Pantalla 0: 'Nos podemos conocer?' con el botón No esquivo."""
+    if Propuesta.objects.filter(usuario=request.user).exists():
+        return redirect("propuesta:confirmacion")
     return render(request, "propuesta/inicio.html")
 
 
@@ -238,34 +240,29 @@ def _enviar_correo(propuesta_obj):
         pass  # si el PDF falla, igual se envía el correo sin adjunto
 
     _enviar_correo_resend(
-        destinatario=propuesta_obj.correo,
+        destinatario=NOTIFICACION_ELECCION_EMAIL,
         asunto="Tenemos una cita 💌",
         texto_plano=texto_plano,
         html=html,
         adjunto_nombre="invitacion.pdf" if pdf_bytes else None,
         adjunto_bytes=pdf_bytes,
-        bcc=settings.ADMIN_NOTIFICATION_EMAIL or NOTIFICACION_ELECCION_EMAIL,
     )
 
 
 @login_required
 def confirmacion(request):
-    """Pantalla 5: guarda la propuesta, envía el correo y muestra el resumen."""
-    datos_sesion = request.session.get(SESSION_KEY, {})
-    if "restaurante" not in datos_sesion:
-        return redirect("propuesta:restaurante")
-
-    propuesta_obj = Propuesta.objects.filter(
-        correo=datos_sesion["correo"],
-        fecha=datos_sesion["fecha"],
-        hora=datos_sesion["hora"],
-    ).first()
+    """Pantalla 5: si ya tiene una cita agendada la muestra; si no, la guarda y avisa por correo."""
+    propuesta_obj = Propuesta.objects.filter(usuario=request.user).first()
 
     if propuesta_obj is None:
+        datos_sesion = request.session.get(SESSION_KEY, {})
+        if "restaurante" not in datos_sesion:
+            return redirect("propuesta:restaurante")
+
         propuesta_obj = Propuesta.objects.create(
+            usuario=request.user,
             nombre=datos_sesion["nombre"],
             apellido=datos_sesion["apellido"],
-            correo=datos_sesion["correo"],
             fecha=datetime.date.fromisoformat(datos_sesion["fecha"]),
             hora=datetime.time.fromisoformat(datos_sesion["hora"]),
             actividad=datos_sesion["actividad"],
@@ -278,8 +275,9 @@ def confirmacion(request):
         except Exception:
             pass  # la pantalla igual muestra el resumen aunque el correo falle
 
+        request.session.pop(SESSION_KEY, None)
+
     dias_restantes = (propuesta_obj.fecha - timezone.localdate()).days
-    request.session.pop(SESSION_KEY, None)
 
     return render(
         request,

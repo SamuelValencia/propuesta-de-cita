@@ -34,10 +34,6 @@ class DatosPersonalesForm(forms.Form):
         initial="Macias",
         disabled=True,
     )
-    correo = forms.EmailField(
-        label="Correo electrónico",
-        widget=forms.EmailInput(attrs={"placeholder": "tu@correo.com", "autocomplete": "email"}),
-    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -48,7 +44,6 @@ class DatosPersonalesForm(forms.Form):
                 Column("nombre", css_class="col-md-6"),
                 Column("apellido", css_class="col-md-6"),
             ),
-            "correo",
         )
 
 

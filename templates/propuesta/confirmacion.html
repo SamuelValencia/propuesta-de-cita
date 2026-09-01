@@ -17,14 +17,6 @@
   </span>
 </div>
 
-<p class="subtitulo-pantalla" style="margin-top: 1.5rem;">
-  {% if p.correo_enviado %}
-    Te acabo de mandar los detalles a {{ p.correo }}.
-  {% else %}
-    Guardé todo, aunque el correo tardará un poco en llegarte.
-  {% endif %}
-</p>
-
 <div class="fila-acciones">
   <a href="{% url 'propuesta:descargar_invitacion' p.pk %}" class="boton-secundario">
     <i class="fa-solid fa-file-pdf"></i> Descargar invitación

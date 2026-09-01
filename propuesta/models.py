@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 
@@ -18,9 +19,15 @@ class Propuesta(models.Model):
         ("sushi", "Sushi"),
     ]
 
+    usuario = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="propuesta",
+    )
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
-    correo = models.EmailField()
 
     fecha = models.DateField()
     hora = models.TimeField()
